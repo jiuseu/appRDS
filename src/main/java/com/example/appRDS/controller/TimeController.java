@@ -26,7 +26,7 @@ public class TimeController {
         String now = "";
 
         try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("select now()");
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT @@session.time_zone, @@global.time_zone;");
             ResultSet resultSet = preparedStatement.executeQuery();){
 
             resultSet.next();
