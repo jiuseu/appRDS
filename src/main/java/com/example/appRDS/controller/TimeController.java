@@ -1,5 +1,6 @@
 package com.example.appRDS.controller;
 
+import com.example.appRDS.service.TimeZoneService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.ZoneId;
 import java.util.Map;
+import java.util.TimeZone;
 
 @RestController
 @RequestMapping("/api/time")
@@ -20,6 +22,7 @@ import java.util.Map;
 public class TimeController {
 
     private final DataSource dataSource;
+    private final TimeZoneService timeZoneService;
 
     @GetMapping("/now")
     public Map<String,String>getNow(){
@@ -37,13 +40,13 @@ public class TimeController {
             //sessionTimeZone = resultSet.getString(2);
             //globalTimeZone = resultSet.getString(3);
 
-            log.info("sessionTimeZone : "+sessionTimeZone);
-            log.info("globalTimeZone: "+globalTimeZone);
-            log.info("JVM TIME ZONE: " + now);
+            log.info("DB Time Zone: " + timeZoneService.getDbTimeZone());
+            log.info("JVM Time Zone: " + TimeZone.getDefault().getID());
+            log.info("Current Time (DB): " + now);
         }catch (Exception e){
             e.printStackTrace();
         }
         //return Map.of("sessionTimeZone",sessionTimeZone,"globalTimeZone",globalTimeZone,"NOW", now);
-        return Map.of("NOW",now);
+        return Map.of("NOW", now, "DB Time Zone", timeZoneService.getDbTimeZone());
     }
 }
