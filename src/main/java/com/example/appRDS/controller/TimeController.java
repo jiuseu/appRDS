@@ -10,6 +10,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.ZoneId;
 import java.util.Map;
 
 @RestController
@@ -23,19 +24,26 @@ public class TimeController {
     @GetMapping("/now")
     public Map<String,String>getNow(){
 
+        String sessionTimeZone = "";
+        String globalTimeZone = "";
         String now = "";
 
         try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT @@session.time_zone, @@global.time_zone;");
+            PreparedStatement preparedStatement = connection.prepareStatement("select now()");
             ResultSet resultSet = preparedStatement.executeQuery();){
 
             resultSet.next();
             now = resultSet.getString(1);
+            //sessionTimeZone = resultSet.getString(2);
+            //globalTimeZone = resultSet.getString(3);
 
-            log.info("NOW: "+now);
+            log.info("sessionTimeZone : "+sessionTimeZone);
+            log.info("globalTimeZone: "+globalTimeZone);
+            log.info("JVM TIME ZONE: " + now);
         }catch (Exception e){
             e.printStackTrace();
         }
+        //return Map.of("sessionTimeZone",sessionTimeZone,"globalTimeZone",globalTimeZone,"NOW", now);
         return Map.of("NOW",now);
     }
 }
